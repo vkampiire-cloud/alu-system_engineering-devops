@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Configures a new Ubuntu machine with Nginx and adds custom HTTP response header X-Served-By
+
+apt-get update -y
+apt-get install -y nginx
+
+echo "Holberton School for the win!" > /var/www/html/index.html
+echo "Holberton School for the win!" > /var/www/html/index.nginx-debian.html
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+
+# shellcheck disable=SC2154
+sed -i "/server_name _;/a \    add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
+sed -i "/server_name _;/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;" /etc/nginx/sites-available/default
+sed -i "/server_name _;/a \    error_page 404 /404.html;" /etc/nginx/sites-available/default
+
+service nginx restart

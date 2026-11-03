@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Installs and configures HAProxy on lb-01 to distribute traffic with roundrobin
+
+apt-get update -y
+apt-get install -y haproxy
+
+# Append frontend and backend configuration to /etc/haproxy/haproxy.cfg
+cat << 'EOF' >> /etc/haproxy/haproxy.cfg
+
+frontend lb-frontend
+    bind *:80
+    mode http
+    default_backend lb-backend
+
+backend lb-backend
+    balance roundrobin
+    server 7314-web-01 18.130.99.55:80 check
+    server 7314-web-02 18.130.99.55:80 check
+EOF
+
+# Enable HAProxy init script
+if [ -f /etc/default/haproxy ]; then
+    echo "ENABLED=1" >> /etc/default/haproxy
+fi
+
+service haproxy restart
