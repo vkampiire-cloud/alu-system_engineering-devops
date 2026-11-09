@@ -7,3 +7,4 @@
 0-iamsomeoneelse text eol=lf
 1-run_nginx_as_nginx text eol=lf
 0-strace_is_your_friend.pp text eol=lf
+0-the_sky_is_the_limit_not.pp text eol=lf

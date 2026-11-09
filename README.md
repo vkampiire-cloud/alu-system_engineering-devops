@@ -12,3 +12,4 @@ Repository containing system engineering, networking, DevOps, and infrastructure
 - `web_stack_debugging_1`: Nginx port configuration troubleshooting and service restoration.
 - `web_stack_debugging_2`: Running processes as non-root users and running Nginx as the `nginx` user.
 - `web_stack_debugging_3`: Troubleshooting Apache 500 error using strace and automating the fix with Puppet.
+- `web_stack_debugging_4`: Benchmarking with ApacheBench and increasing Nginx file descriptor limits with Puppet.
