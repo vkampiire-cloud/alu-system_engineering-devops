@@ -4,9 +4,10 @@
 apt-get update -y
 apt-get install -y nginx
 
-echo "Holberton School for the win!" > /var/www/html/index.html
-echo "Holberton School for the win!" > /var/www/html/index.nginx-debian.html
+mkdir -p /var/www/html /usr/share/nginx/html
+echo "Holberton School for the win!" | tee /var/www/html/index.html /var/www/html/index.nginx-debian.html /usr/share/nginx/html/index.html
 
-sed -i '/server_name _;/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+sed -i '/^[[:space:]]*server_name/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+sed -i '/^[[:space:]]*server_name/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-enabled/default 2>/dev/null
 
 service nginx restart
