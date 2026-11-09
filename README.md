@@ -10,3 +10,4 @@ Repository containing system engineering, networking, DevOps, and infrastructure
 - `firewall`: UFW (Uncomplicated Firewall) incoming and outgoing traffic filtering.
 - `web_stack_debugging_0`: Docker container debugging and Apache web server troubleshooting.
 - `web_stack_debugging_1`: Nginx port configuration troubleshooting and service restoration.
+- `web_stack_debugging_2`: Running processes as non-root users and running Nginx as the `nginx` user.
