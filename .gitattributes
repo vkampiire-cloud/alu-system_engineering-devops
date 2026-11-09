@@ -1,7 +1,9 @@
 * text=auto eol=lf
 *.sh text eol=lf
+*.pp text eol=lf
 0-block_all_incoming_traffic_but text eol=lf
 0-give_me_a_page text eol=lf
 0-nginx_likes_port_80 text eol=lf
 0-iamsomeoneelse text eol=lf
 1-run_nginx_as_nginx text eol=lf
+0-strace_is_your_friend.pp text eol=lf
