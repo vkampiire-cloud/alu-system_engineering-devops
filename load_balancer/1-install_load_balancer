@@ -4,7 +4,10 @@
 apt-get update -y
 apt-get install -y haproxy
 
-# Append frontend and backend configuration to /etc/haproxy/haproxy.cfg
+if [ -f /etc/default/haproxy ]; then
+    sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
+fi
+
 cat << 'EOF' >> /etc/haproxy/haproxy.cfg
 
 frontend lb-frontend
@@ -15,12 +18,7 @@ frontend lb-frontend
 backend lb-backend
     balance roundrobin
     server 7314-web-01 18.130.99.55:80 check
-    server 7314-web-02 18.130.99.55:80 check
+    server 7314-web-02 18.130.123.188:80 check
 EOF
-
-# Enable HAProxy init script
-if [ -f /etc/default/haproxy ]; then
-    echo "ENABLED=1" >> /etc/default/haproxy
-fi
 
 service haproxy restart
