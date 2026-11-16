@@ -1,29 +1,15 @@
 #!/usr/bin/env bash
-# Configures a new Ubuntu machine with Nginx and adds custom HTTP response header X-Served-By
-# shellcheck disable=SC2154
+# Configures Nginx with a custom HTTP response header X-Served-By containing server hostname
 
 apt-get update -y
 apt-get install -y nginx
 
-mkdir -p /var/www/html /usr/share/nginx/html
-echo "Holberton School for the win!" | tee /var/www/html/index.html /var/www/html/index.nginx-debian.html /usr/share/nginx/html/index.html
-echo "Ceci n'est pas une page" | tee /var/www/html/404.html /usr/share/nginx/html/404.html
+echo "Holberton School" > /var/www/html/index.html
+echo "Holberton School" > /var/www/html/index.nginx-debian.html
 
-# Configure 301 redirection
-if ! grep -q "redirect_me" /etc/nginx/sites-available/default; then
-    sed -i '/^[[:space:]]*server_name/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
-fi
-
-# Configure custom 404 page
-if ! grep -q "error_page 404" /etc/nginx/sites-available/default; then
-    sed -i '/^[[:space:]]*server_name/a \    error_page 404 /404.html;' /etc/nginx/sites-available/default
-fi
-
-# Add custom HTTP response header X-Served-By with server hostname (unquoted)
-if ! grep -q "add_header X-Served-By" /etc/nginx/sites-available/default; then
-    sed -i "/^[[:space:]]*server_name/a \    add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
-else
-    sed -i "s/add_header X-Served-By .*/add_header X-Served-By $HOSTNAME;/" /etc/nginx/sites-available/default
+# Insert X-Served-By header right after server_name _;
+if ! grep -q "X-Served-By" /etc/nginx/sites-available/default; then
+    sed -i "/server_name _;/a \    add_header X-Served-By \$HOSTNAME;" /etc/nginx/sites-available/default
 fi
 
 service nginx restart
