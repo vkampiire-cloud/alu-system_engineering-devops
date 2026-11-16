@@ -9,14 +9,21 @@ mkdir -p /var/www/html /usr/share/nginx/html
 echo "Holberton School for the win!" | tee /var/www/html/index.html /var/www/html/index.nginx-debian.html /usr/share/nginx/html/index.html
 echo "Ceci n'est pas une page" | tee /var/www/html/404.html /usr/share/nginx/html/404.html
 
-HOST=$(hostname)
-sed -i "/^[[:space:]]*server_name/a \    add_header X-Served-By \"$HOST\";" /etc/nginx/sites-available/default
-sed -i "/^[[:space:]]*server_name/a \    add_header X-Served-By \"$HOST\";" /etc/nginx/sites-enabled/default 2>/dev/null
+# Configure 301 redirection
+if ! grep -q "redirect_me" /etc/nginx/sites-available/default; then
+    sed -i '/^[[:space:]]*server_name/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+fi
 
-sed -i '/^[[:space:]]*server_name/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
-sed -i '/^[[:space:]]*server_name/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-enabled/default 2>/dev/null
+# Configure custom 404 page
+if ! grep -q "error_page 404" /etc/nginx/sites-available/default; then
+    sed -i '/^[[:space:]]*server_name/a \    error_page 404 /404.html;' /etc/nginx/sites-available/default
+fi
 
-sed -i '/^[[:space:]]*server_name/a \    error_page 404 /404.html;' /etc/nginx/sites-available/default
-sed -i '/^[[:space:]]*server_name/a \    error_page 404 /404.html;' /etc/nginx/sites-enabled/default 2>/dev/null
+# Add custom HTTP response header X-Served-By with server hostname (unquoted)
+if ! grep -q "add_header X-Served-By" /etc/nginx/sites-available/default; then
+    sed -i "/^[[:space:]]*server_name/a \    add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
+else
+    sed -i "s/add_header X-Served-By .*/add_header X-Served-By $HOSTNAME;/" /etc/nginx/sites-available/default
+fi
 
 service nginx restart

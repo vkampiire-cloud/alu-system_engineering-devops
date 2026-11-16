@@ -4,10 +4,13 @@
 apt-get update -y
 apt-get install -y haproxy
 
+# Enable HAProxy init script
 if [ -f /etc/default/haproxy ]; then
     sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
 fi
 
+# Configure frontend and backend for roundrobin load balancing
+if ! grep -q "frontend lb-frontend" /etc/haproxy/haproxy.cfg; then
 cat << 'EOF' >> /etc/haproxy/haproxy.cfg
 
 frontend lb-frontend
@@ -20,5 +23,6 @@ backend lb-backend
     server 7314-web-01 18.130.99.55:80 check
     server 7314-web-02 18.130.123.188:80 check
 EOF
+fi
 
 service haproxy restart
