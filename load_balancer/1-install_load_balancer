@@ -5,8 +5,10 @@ apt-get update -y
 apt-get install -y haproxy
 
 # Enable HAProxy init script
-if [ -f /etc/default/haproxy ]; then
+if grep -q "ENABLED=0" /etc/default/haproxy 2>/dev/null; then
     sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
+elif ! grep -q "ENABLED=1" /etc/default/haproxy 2>/dev/null; then
+    echo "ENABLED=1" >> /etc/default/haproxy
 fi
 
 # Configure frontend and backend for roundrobin load balancing
