@@ -1,14 +1,28 @@
 #!/usr/bin/env bash
-# abankdkj,nloalskjn
+# Configures Nginx with a custom HTTP response header X-Served-By containing the server hostname
+
 apt-get update -y
 apt-get install -y nginx
 
-echo "Holberton School" > /var/www/html/index.html
-echo "Holberton School" > /var/www/html/index.nginx-debian.html
+mkdir -p /var/www/html /usr/share/nginx/html
+echo "Holberton School" | tee /var/www/html/index.html /var/www/html/index.nginx-debian.html /usr/share/nginx/html/index.html > /dev/null
+echo "Ceci n'est pas une page" | tee /var/www/html/404.html /usr/share/nginx/html/404.html > /dev/null
 
-# Insert X-Served-By header right after server_name _;
+if ! grep -q "redirect_me" /etc/nginx/sites-available/default; then
+    sed -i '/^[[:space:]]*server_name/a \    rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+fi
+
+if ! grep -q "error_page 404" /etc/nginx/sites-available/default; then
+    sed -i '/^[[:space:]]*server_name/a \    error_page 404 /404.html;' /etc/nginx/sites-available/default
+fi
+
+# Insert X-Served-By header with the server hostname
 if ! grep -q "X-Served-By" /etc/nginx/sites-available/default; then
-    sed -i "/server_name _;/a \    add_header X-Served-By \$HOSTNAME;" /etc/nginx/sites-available/default
+    # shellcheck disable=SC2154
+    sed -i "/^[[:space:]]*server_name/a \    add_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/default
+else
+    # shellcheck disable=SC2154
+    sed -i "s/add_header X-Served-By .*/add_header X-Served-By $HOSTNAME;/" /etc/nginx/sites-available/default
 fi
 
 service nginx restart
